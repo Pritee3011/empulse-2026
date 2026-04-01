@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English&family=Caveat&display=swap');
+
+:root {
+    --bg-center: #faebd7;
+    --bg-edges: #deb887;
+    --text-main: #2c2925;
+    --accent-brown: #5d4037;
+    --font-heading: 'Playfair Display', serif;
+}
+
+/* 1. Page Background */
+body {
+    background: radial-gradient(circle, var(--bg-center) 20%, var(--bg-edges) 150%);
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-heading);
+    overflow-x: hidden;
+}
+
+/* 2. Success Parchment Container */
+.scroll-container-success {
+    position: relative;
+    width: 90%;
+    max-width: 700px;
+    background-color: #fffdfa;
+    background-image: url('../images/vintage_bg.png'); /* Subtle texture if you have it */
+    background-size: cover;
+    padding: 60px 50px;
+    border: 3px solid var(--accent-brown);
+    box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+    border-radius: 4px;
+    text-align: center;
+    z-index: 10;
+}
+
+/* 3. THE FLOATING SEAL (The "Object") */
+.scroll-container-success::after {
+    content: "";
+    position: absolute;
+    background-image: url('../images/seal.png'); /* Your mohor image */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    
+    /* Laptop Size */
+    width: 200px;
+    height: 200px;
+    
+    /* Floating position on bottom right corner */
+    bottom: -50px; 
+    right: -40px;
+    
+    z-index: 20; 
+    filter: drop-shadow(8px 8px 15px rgba(0,0,0,0.4));
+    transition: all 0.5s ease-in-out;
+}
+
+/* 4. Responsive adjustments for Phone */
+@media (max-width: 768px) {
+    .scroll-container-success {
+        padding: 40px 20px;
+        margin-bottom: 60px;
+    }
+    .scroll-container-success::after {
+        width: 140px;
+        height: 140px;
+        bottom: -40px;
+        right: 0px; /* Moves inside so it doesn't leave the screen */
+    }
+}
+
+/* Typography */
+.main-headline { font-size: 2.8rem; letter-spacing: 2px; text-transform: uppercase; color: #3e2723; }
+.handwritten { font-family: 'Caveat', cursive; color: var(--accent-brown); }
+
+.confirmation-box {
+    border: 2px dashed var(--accent-brown);
+    padding: 25px;
+    margin: 25px 0;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.id-highlight {
+    font-family: 'Cinzel', serif;
+    font-size: 2.2rem;
+    color: #8b4513;
+    display: block;
+    letter-spacing: 4px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Buttons */
+.btn-submit {
+    background: #2c2925;
+    color: #faebd7;
+    border: 2px solid #1a1816;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px #1a1816;
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+.btn-submit:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #1a1816;
+    color: #FFD700;
+}
+
+.return-link {
+    margin-top: 15px;
+    display: block;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+.bold-divider { border: none; border-top: 2px solid var(--accent-brown); margin: 30px 0; }

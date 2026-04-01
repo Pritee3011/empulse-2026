@@ -1,0 +1,218 @@
+/* Color Palette and Fonts */
+:root {
+    --bg-center: #faebd7;
+    --bg-edges: #deb887;
+    --text-main: #2c2925;
+    --accent-gray: #5c554d;
+    --ink: #2c1b0e;
+    
+    --font-heading: 'Playfair Display', serif;
+    --font-handwriting: 'Caveat', cursive;
+    --font-body: 'Playfair Display', serif; 
+}
+
+/* Basic Resets */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: radial-gradient(circle, var(--bg-center) 20%, var(--bg-edges) 150%);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    overflow-x: hidden; /* Prevent horizontal jitter */
+    min-height: 100vh;
+}
+
+/* 1. Responsive Scroll Container */
+.scroll-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px; /* Changed from min-width to max-width */
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 2rem 1.5rem; /* Tighter padding for mobile */
+    overflow: hidden;
+}
+
+/* 2. Dynamic Vintage Background */
+.dynamic-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.18; 
+    mix-blend-mode: multiply;
+    filter: sepia(0.6) grayscale(0.8) contrast(1.2);
+    transition: background-image 0.6s ease-in-out;
+    z-index: -1;
+}
+
+.dynamic-bg.crystal-clear {
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+    filter: none !important;
+}
+
+/* 3. Responsive Typography */
+h1, h2, h3 { 
+    font-family: var(--font-heading); 
+    font-weight: 700; 
+    margin-bottom: 0.5rem; 
+}
+
+/* Use clamp for fluid font sizes: min, preferred, max */
+.main-headline { 
+    font-size: clamp(2rem, 8vw, 3.5rem); 
+    letter-spacing: -1px; 
+    line-height: 1.1;
+}
+
+.handwritten { 
+    font-family: var(--font-handwriting); 
+    font-size: clamp(1.5rem, 5vw, 2.5rem); 
+    transform: rotate(-3deg); 
+    display: inline-block; 
+}
+
+.small-caps { 
+    font-variant: small-caps; 
+    letter-spacing: 2px; 
+    font-size: 0.8rem; 
+    color: var(--accent-gray); 
+}
+
+.bold-divider { 
+    border: none; 
+    border-top: clamp(3px, 1vw, 6px) solid var(--text-main); 
+    margin: 1.5rem 0; 
+}
+
+/* 4. Fixed Menu Button - Smaller for Mobile */
+.vintage-menu-trigger {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--bg-center);
+    border: 1px solid var(--text-main);
+    padding: 0.6rem 1rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    cursor: pointer;
+    z-index: 150; 
+    transition: all 0.3s ease;
+    box-shadow: 2px 2px 0px var(--text-main);
+}
+
+.vintage-menu-trigger:hover {
+    background: var(--text-main);
+    color: var(--bg-center);
+}
+
+/* 5. The Dark Backdrop Overlay */
+.menu-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 900;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease;
+}
+
+.menu-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 6. The Slide-Out Menu Panel */
+.vintage-side-nav {
+    position: fixed;
+    top: 0;
+    right: -100%; 
+    width: 85%; /* Covers most of the screen but lets backdrop show */
+    max-width: 400px;
+    height: 100vh;
+    background: var(--bg-center);
+    background-image: url('https://www.transparenttextures.com/patterns/p6.png'); /* Texture for menu */
+    border-left: 3px solid var(--text-main);
+    z-index: 1000;
+    transition: right 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    display: flex;
+    flex-direction: column;
+    padding: 5rem 2rem 2rem 2.5rem; /* Adjusted for mobile thumb reach */
+    box-shadow: -10px 0 30px rgba(0,0,0,0.2);
+    overflow-y: auto; 
+}
+
+.vintage-side-nav.open {
+    right: 0;
+}
+
+.vintage-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 2.5rem;
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+/* 7. Menu Links */
+.vintage-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.vintage-nav-links a {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 10vw, 3rem); /* Scaled down for mobile */
+    font-weight: 700;
+    color: var(--text-main);
+    text-decoration: none;
+    line-height: 1.2;
+    transition: all 0.3s ease;
+}
+
+.vintage-nav-links a:hover {
+    padding-left: 10px;
+    color: var(--accent-gray);
+}
+
+/* 8. Footer Fixes */
+.vintage-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 12px 10px;
+    font-size: 0.7rem;
+    color: var(--ink);
+    background: rgba(246, 230, 213, 0.85);
+    backdrop-filter: blur(5px);
+    z-index: 15;
+    border-top: 1px solid rgba(44, 27, 14, 0.1);
+}
+
+/* 9. Laptop/Desktop Specific Adjustments */
+@media (min-width: 1024px) {
+    .scroll-container {
+        padding: 4rem 10%;
+    }
+    .vintage-nav-links {
+        gap: 1.5rem;
+    }
+    .vintage-side-nav {
+        padding: 5rem 4rem;
+    }
+}

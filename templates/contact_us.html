@@ -1,0 +1,211 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Playfair+Display:wght@400;700&display=swap');
+
+    body {
+    /* Change the light cream to deep voyage dark */
+    background-color: #0a0908 !important; 
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+   #dynamic-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    /* This ensures the background stays dark even if the image fails to load */
+    background-color: #0a0908; 
+    
+    /* Keep your image but lower the opacity so it doesn't wash out the dark feel */
+    background-image: url('{{ url_for("static", filename="images/contact_us.jpg") }}');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.12; 
+    mix-blend-mode: screen;
+}
+
+    .contact-scroll {
+        display: block;
+        background-color: #fdf5e6;
+        background-image: url('https://www.transparenttextures.com/patterns/p6.png'); /* Subtle parchment texture */
+        width: 90%;
+        max-width: 600px;
+        margin: 100px auto 40px auto;
+        padding: 60px 40px;
+        border: 2px solid #d2b48c;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        position: relative;
+        font-family: 'Playfair Display', serif;
+        color: #1a1a1a;
+        box-sizing: border-box;
+    }
+
+    .contact-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 3.5rem;
+        text-transform: uppercase;
+        border-bottom: 4px solid #000;
+        display: inline-block;
+        margin-bottom: 40px;
+        letter-spacing: 2px;
+    }
+
+    .contact-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.3s ease;
+    }
+
+    .contact-item:hover {
+        transform: translateX(10px);
+    }
+
+    .contact-icon {
+        background: #1a1a1a;
+        color: #fffdfa;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        margin-right: 20px;
+        flex-shrink: 0;
+        box-shadow: 4px 4px 0px #d2b48c;
+    }
+
+    .contact-info b {
+        display: block;
+        font-size: 1.2rem;
+        line-height: 1.2;
+        word-break: break-word; /* Prevents long emails from breaking layout */
+    }
+
+    .contact-info span {
+        font-size: 0.9rem;
+        opacity: 0.7;
+        font-style: italic;
+    }
+
+    /* Floating Quill Decoration */
+    .quill-decoration {
+        position: absolute;
+        bottom: -30px;
+        right: -20px;
+        width: 150px;
+        filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.3));
+        pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+        .contact-scroll {
+            /* Force the box to start lower */
+            margin-top: 140px !important; 
+            margin-bottom: 50px !important;
+            
+            /* Add some 'push' from the top in case of flex containers */
+            top: 0; 
+            
+            width: 92% !important;
+            padding: 40px 20px !important;
+            box-sizing: border-box;
+        }
+
+        .contact-title {
+            font-size: 2rem !important;
+            margin-bottom: 25px !important;
+        }
+
+        .contact-icon {
+            width: 38px !important;
+            height: 38px !important;
+            margin-right: 12px !important;
+        }
+
+        .contact-info b {
+            font-size: 1rem !important;
+            line-height: 1.3;
+        }
+    }
+</style>
+
+<div id="dynamic-bg"></div>
+
+<div class="contact-scroll">
+    <h1 class="contact-title">CONTACT US</h1>
+
+    <div class="contact-list">
+        <a href="tel:+919561226359" class="contact-item">
+            <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+            <div class="contact-info">
+                <b>+91 9561226359</b>
+                <span>Akshata Nagmoti (CEO, E-Cell Yukta)</span>
+            </div>
+        </a>
+
+        <a href="mailto:ecellyukta@cumminscollege.in" class="contact-item">
+            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+            <div class="contact-info">
+                <b>ecellyukta@cumminscollege.in</b>
+                <span>Official Correspondence</span>
+            </div>
+        </a>
+
+        <a href="https://instagram.com/ecell.yukta" target="_blank" class="contact-item">
+            <div class="contact-icon"><i class="fab fa-instagram"></i></div>
+            <div class="contact-info">
+                <b>@ecell.yukta</b>
+                <span>Daily Dispatch</span>
+            </div>
+        </a>
+
+        <a href="https://linkedin.com/in/ecellyukta" target="_blank" class="contact-item">
+            <div class="contact-icon"><i class="fab fa-linkedin-in"></i></div>
+            <div class="contact-info">
+                <b>ecellyukta</b>
+                <span>Professional Network</span>
+            </div>
+        </a>
+    </div>
+
+    <img src="{{ url_for('static', filename='images/seal.png') }}" class="quill-decoration" alt="decoration">
+</div>
+
+<button class="vintage-menu-trigger" id="menu-btn">
+    <span class="small-caps">※ Menu</span>
+</button>
+
+<div class="menu-backdrop" id="menu-backdrop"></div>
+
+<nav id="side-nav" class="vintage-side-nav">
+    <button class="vintage-close-btn" id="close-btn">&times;</button>
+    
+    <div class="vintage-nav-links">
+        <a href="/" data-bg="static/images/home.png">Home</a>
+        <a href="/events" data-bg="static/images/event.jpg">The Events</a>
+        <a href="/agenda" data-bg="static/images/agenda.avif">Agenda</a>
+        <a href="/speakers" data-bg="static/images/Speakers.jpg">Speakers</a>
+        <a href="/sponsors" data-bg="static/images/sponsors.png">Sponsors</a>
+        <a href="/contact_us" data-bg="static/images/contact_us.jpg">Contact Us</a>
+    </div>
+</nav>
+
+<footer class="vintage-footer">
+    © Empulse’26 | E-Cell Yukta, Cummins College of Engineering, Pune
+</footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>

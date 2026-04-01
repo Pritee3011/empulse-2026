@@ -1,0 +1,174 @@
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-family: 'Cinzel', serif; font-size: 0.9rem; margin-bottom: 5px; color: #5d4037; }
+        .member-section { border-top: 1px dashed #5d4037; margin-top: 25px; padding-top: 15px; }
+        .qr-container { text-align: center; background: rgba(255,255,255,0.4); padding: 25px; border-radius: 8px; border: 1px solid #d2b48c; margin: 30px 0; }
+        
+        /* Loading Spinner */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #faebd7;
+            font-family: 'Cinzel', serif;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="dynamic-bg" style="background-image: url('{{ url_for('static', filename='images/vintage_bg.png') }}'); position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -10; background-size: cover; opacity: 0.15; pointer-events: none;"></div>
+
+    <button class="vintage-menu-trigger" id="menu-btn" style="z-index: 100;">
+        <span class="small-caps">※ Menu</span>
+    </button>
+    <div class="menu-backdrop" id="menu-backdrop" style="z-index: 90;"></div>
+    <nav id="side-nav" class="vintage-side-nav" style="z-index: 105;">
+        <button class="vintage-close-btn" id="close-btn">&times;</button>
+        <div class="vintage-nav-links">
+            <a href="/">Home</a>
+            <a href="/events">The Events</a>
+            <a href="/agenda">Agenda</a>
+            <a href="/speakers">Speakers</a>
+            <a href="/sponsors">Sponsors</a>
+            <a href="/contact_us">Contact Us</a>
+        </div>
+    </nav>
+
+    <div class="form-container scroll-container">
+        <h1 id="event-title" style="font-family: 'Cinzel', serif; text-align: center; margin-bottom: 10px;">Event Registration</h1>
+        <p style="text-align: center; font-style: italic; margin-bottom: 30px;">Complete the scroll to secure your spot in the voyage.</p>
+        
+        <form id="regForm" action="/submit_registration" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="event_name" id="event_name_input">
+
+            <div class="input-group">
+                <label>Team Name *</label>
+                <input type="text" name="team_name" required minlength="3" placeholder="Enter Team Name">
+                <span class="error-msg" id="name-error">Team name is required (min 3 chars).</span>
+            </div>
+
+            <div class="input-group">
+                <label>College Name (Captain's College) *</label>
+                <input type="text" name="college" required placeholder="MKSSS's Cummins College...">
+            </div>
+
+            <h3 style="font-family: 'Cinzel', serif; margin-top: 30px; border-bottom: 1px solid #5d4037;">Team Captain (Member 1)</h3>
+            <div class="input-group">
+                <input type="text" name="m1_name" placeholder="Full Name *" required>
+                <input type="email" name="m1_email" placeholder="Email Address *" required>
+                <input type="tel" name="m1_phone" placeholder="Contact Number (WhatsApp) *" pattern="[0-9]{10}" required>
+            </div>
+
+            <div id="additional-members">
+                </div>
+
+            <div class="qr-container">
+                <h3 style="font-family: 'Cinzel', serif; margin-bottom: 15px;">Payment Vault</h3>
+                <img src="{{ url_for('static', filename='images/QR.png') }}" alt="Payment QR" style="width:180px; border: 5px solid white;">
+                <p style="margin: 10px 0;">Scan to pay via UPI</p>
+                <a href="https://payments.billdesk.com/bdcollect/bd/mkssscoewp/18745" target="_blank" style="color:#8b4513; font-weight:bold; text-decoration: underline;">Or click here for BillDesk Portal</a>
+                
+                <div class="input-group" style="margin-top:25px;">
+                    <label>Transaction ID / UTR Number *</label>
+                    <input type="text" name="transaction_id" required placeholder="Enter Transaction ID">
+                </div>
+                
+                <div class="input-group">
+                    <label>Payment Receipt (Image under 500KB) *</label>
+                    <input type="file" name="screenshot" id="screenshot" accept="image/*" required>
+                    <span id="file-error" class="error-msg" style="display:none; color: red;">File must be an image and under 500KB.</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn" style="width: 100%;">Submit & Secure Spot</button>
+            <p id="final-error" class="error-msg" style="text-align:center; display:none; color: red;">Please ensure all required fields are filled correctly.</p>
+        </form>
+    </div>
+
+    <div id="loading" class="loading-overlay">
+        <div style="font-size: 3rem; margin-bottom: 10px;">⚓</div>
+        <p>Securing your spot in the Voyage...</p>
+        <small>(Please do not refresh)</small>
+    </div>
+
+    <footer class="vintage-footer">
+        © Empulse’26 | E-Cell Yukta, Cummins College of Engineering, Pune
+    </footer>
+
+    <script>
+        // 1. Config for Event Rules
+        const eventRules = {
+            'hackathon': { min: 4, max: 5, title: "The Venture Voyage" },
+            'investify': { min: 2, max: 3, title: "Investify" },
+            'wreckage': { min: 4, max: 5, title: "Sift Through Wreckage" },
+            'bollywood': { min: 2, max: 4, title: "Bollywood Pitching" },
+            'table-talks': { min: 1, max: 1, title: "Table Talks" }
+        };
+
+        const params = new URLSearchParams(window.location.search);
+        const eventKey = params.get('event') || 'hackathon';
+        const rule = eventRules[eventKey] || eventRules['hackathon'];
+
+        document.getElementById('event-title').innerText = rule.title;
+        document.getElementById('event_name_input').value = rule.title;
+
+        // 2. Generate Member Fields
+        const container = document.getElementById('additional-members');
+        for (let i = 2; i <= rule.max; i++) {
+            const isRequired = i <= rule.min ? 'required' : '';
+            const label = i <= rule.min ? `Member ${i} *` : `Member ${i} (Optional)`;
+            
+            container.innerHTML += `
+                <div class="member-section">
+                    <h4 style="font-family: 'Cinzel', serif; font-size: 1rem; color: #5d4037;">${label}</h4>
+                    <input type="text" name="m${i}_name" placeholder="Full Name" ${isRequired}>
+                    <input type="email" name="m${i}_email" placeholder="Email Address" ${isRequired}>
+                    <input type="tel" name="m${i}_phone" placeholder="Contact Number" pattern="[0-9]{10}" ${isRequired}>
+                </div>
+            `;
+        }
+
+        // 3. Validation & Loading Logic
+        const form = document.getElementById('regForm');
+        const fileInput = document.getElementById('screenshot');
+        const loading = document.getElementById('loading');
+
+        fileInput.onchange = function() {
+            if(this.files[0] && this.files[0].size > 500 * 1024) {
+                document.getElementById('file-error').style.display = 'block';
+                this.value = "";
+            } else {
+                document.getElementById('file-error').style.display = 'none';
+            }
+        };
+
+        form.onsubmit = function() {
+            loading.style.display = 'flex';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').innerText = "Processing...";
+        };
+
+        // 4. Menu Logic
+        const menuBtn = document.getElementById('menu-btn');
+        const closeBtn = document.getElementById('close-btn');
+        const sideNav = document.getElementById('side-nav');
+        const backdrop = document.getElementById('menu-backdrop');
+
+        function toggleMenu() {
+            sideNav.classList.toggle('open');
+            backdrop.classList.toggle('active');
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+        backdrop.addEventListener('click', toggleMenu);
+    </script>

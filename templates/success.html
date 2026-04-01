@@ -1,0 +1,150 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+    /* CSS specifically for the Success Page and Floating Seal */
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English&family=Caveat&display=swap');
+
+    /* Success Scroll Container */
+    .scroll-container-success {
+        position: relative;
+        width: 90%;
+        max-width: 700px;
+        background-color: #fffdfa;
+        background-image: url('static/images/vintage_bg.png'); /* Subtle texture */
+        background-size: cover;
+        padding: 60px 50px;
+        margin: 60px auto;
+        border: 3px solid #5d4037;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+        border-radius: 4px;
+        text-align: center;
+        z-index: 10;
+        font-family: 'Playfair Display', serif;
+    }
+
+    /* THE FLOATING SEAL (The "Object") */
+    .scroll-container-success::after {
+        content: "";
+        position: absolute;
+        background-image: url('static/images/seal.png'); /* Ensure filename is seal.png */
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        
+        /* Laptop/Desktop Size */
+        width: 200px;
+        height: 200px;
+        
+        /* Floating position on bottom right corner */
+        bottom: -50px; 
+        right: -40px;
+        
+        z-index: 20; 
+        filter: drop-shadow(8px 8px 15px rgba(0,0,0,0.4));
+        transition: all 0.5s ease-in-out;
+    }
+
+    /* Responsive adjustments for Phone */
+    @media (max-width: 768px) {
+        .scroll-container-success {
+            padding: 40px 20px;
+            width: 95%;
+        }
+        .scroll-container-success::after {
+            width: 130px;
+            height: 130px;
+            bottom: -30px;
+            right: 0px; 
+        }
+    }
+
+    .id-highlight {
+        font-family: 'Cinzel', serif;
+        font-size: 2.2rem;
+        color: #8b4513;
+        display: block;
+        letter-spacing: 4px;
+        font-weight: bold;
+        margin: 15px 0;
+    }
+
+    .confirmation-box {
+        border: 2px dashed #5d4037;
+        padding: 25px;
+        margin: 25px 0;
+        background: rgba(255, 255, 255, 0.4);
+    }
+</style>
+
+ <button class="vintage-menu-trigger" id="menu-btn" style="z-index: 100;">
+        <span class="small-caps">※ Menu</span>
+    </button>
+
+    <div class="menu-backdrop" id="menu-backdrop" style="z-index: 90;"></div>
+
+    <nav id="side-nav" class="vintage-side-nav" style="z-index: 105;">
+        <button class="vintage-close-btn" id="close-btn">&times;</button>
+
+        <div class="vintage-nav-links">
+            <a href="/" data-bg="static/images/home.png">Home</a>
+            <a href="/events" data-bg="static/images/event.jpg">The Events</a>
+            <a href="/agenda" data-bg="static/images/agenda.avif">Agenda</a>
+            <a href="/speakers" data-bg="static/images/speakers.png">Speakers</a>
+            <a href="/sponsors" data-bg="static/images/sponsors.png">Sponsors</a>
+            <a href="/contact_us" data-bg="static/images/contact_us.jpg">Contact Us</a>
+        </div>
+    </nav>
+
+<div class="scroll-container-success">
+    
+    <div id="receipt-content">
+        <span class="success-icon" style="font-size: 4rem; display: block; margin-bottom: 10px;">⚓</span>
+        <h1 style="font-size: 2.8rem; letter-spacing: 2px; text-transform: uppercase;">Voyage Confirmed!</h1>
+        <h2 style="font-family: 'Caveat', cursive; color: #5d4037; font-size: 1.8rem;">~ Your Entry is Secured ~</h2>
+
+        <div class="confirmation-box">
+            <p>Greetings, Innovator!</p>
+            <p>Your registration for <strong>{{ event }}</strong> is recorded in our archives.</p>
+            
+            {% if unique_id %}
+            <p style="margin-top: 20px; font-variant: small-caps; color: #5c554d;">Unique Identification Code:</p>
+            <span class="id-highlight">{{ unique_id }}</span>
+            {% endif %}
+        </div>
+
+        <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 20px;">
+            Official confirmation from <strong>ecell.yukta@cumminscollege.in</strong>
+        </p>
+    </div>
+
+    <hr style="border: none; border-top: 2px solid #5d4037; margin: 30px 0;">
+
+    <div style="display: flex; flex-direction: column; gap: 15px; align-items: center; position: relative; z-index: 30;">
+        <button onclick="downloadPDF()" class="btn-submit" style="background: #2c2925; color: #faebd7; padding: 1rem 2rem; cursor: pointer; border: none; font-family: 'Playfair Display', serif; font-size: 1.2rem; box-shadow: 4px 4px 0px #1a1816;">
+            📜 Download Receipt (PDF)
+        </button>
+        <a href="/" style="color: #2c2925; text-decoration: underline;">Return to Main Map</a>
+    </div>
+
+    <footer style="margin-top: 80px; font-size: 0.8rem; opacity: 0.6;">
+        © Empulse’26 | E-Cell Yukta, Cummins College of Engineering, Pune
+    </footer>
+</div>
+
+<script>
+    const DEFAULT_BG = "{{ url_for('static', filename='images/MPULSE.png') }}";
+
+    function downloadPDF() {
+        const element = document.getElementById('receipt-content');
+        const opt = {
+            margin: 0.5,
+            filename: 'Empulse26_{{ event }}_Receipt.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 3, useCORS: true },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+</script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>

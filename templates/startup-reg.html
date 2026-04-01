@@ -1,0 +1,83 @@
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+
+    <div class="form-container scroll-container">
+        <h1>Startup Showcase</h1>
+        <h2 style="text-align: center; font-family: 'IM Fell English';">~ Registration Form ~</h2>
+        
+        <form action="/submit_showcase" method="POST" id="showcaseForm" novalidate>
+            <div class="input-group">
+                <label>Full Name *</label>
+                <input type="text" name="full_name" id="full_name" required minlength="3">
+                <span class="error-msg">Please enter your full name (min 3 characters).</span>
+            </div>
+
+            <div class="input-group">
+                <label>College Name *</label>
+                <input type="text" name="college" id="college" required>
+                <span class="error-msg">College name is required.</span>
+            </div>
+
+            <div class="input-group">
+                <label>Email Address *</label>
+                <input type="email" name="email" id="email" required>
+                <span class="error-msg">Please enter a valid email address.</span>
+            </div>
+
+            <div class="input-group">
+                <label>Contact Number *</label>
+                <input type="tel" name="phone" id="phone" pattern="[0-9]{10}" required>
+                <span class="error-msg">Please enter a valid 10-digit phone number.</span>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">Register for Showcase</button>
+            <p id="final-error" class="error-msg" style="text-align:center; margin-top: 15px;">
+                Wait! Some scrolls are incomplete. Please check the red fields.
+            </p>
+        </form>
+    </div>
+    
+    <footer style="margin-top: 80px; font-size: 0.8rem; opacity: 0.6;">
+        © Empulse’26 | E-Cell Yukta, Cummins College of Engineering, Pune
+    </footer>
+    <script>
+        const form = document.getElementById('showcaseForm');
+        const inputs = form.querySelectorAll('input');
+
+        // 1. Real-time validation as user types
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                const errorSpan = input.nextElementSibling;
+                if (input.checkValidity()) {
+                    input.style.border = "1px solid #5d4037"; // Reset to vintage brown
+                    errorSpan.style.display = "none";
+                } else {
+                    input.style.border = "2px solid #b71c1c";
+                    errorSpan.style.display = "block";
+                }
+            });
+        });
+
+        // 2. Final validation on Submit
+        form.addEventListener('submit', function(e) {
+            let formIsValid = true;
+
+            inputs.forEach(input => {
+                const errorSpan = input.nextElementSibling;
+                if (!input.checkValidity()) {
+                    input.style.border = "2px solid #b71c1c";
+                    errorSpan.style.display = "block";
+                    formIsValid = false;
+                }
+            });
+
+            if (!formIsValid) {
+                e.preventDefault(); // Stop the form from sending
+                document.getElementById('final-error').style.display = 'block';
+                
+                // Shake effect (optional)
+                document.getElementById('submitBtn').style.transform = "translateX(10px)";
+                setTimeout(() => { document.getElementById('submitBtn').style.transform = "translateX(0)"; }, 100);
+            }
+        });
+    </script>

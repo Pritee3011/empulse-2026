@@ -1,0 +1,162 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Playfair+Display:wght@400;700&display=swap');
+
+    body {
+        background-color: #0a0908 !important; 
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+    }
+
+    #dynamic-bg {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background-color: #0a0908; 
+        background-image: url('{{ url_for("static", filename="images/Speakers.jpg") }}');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.12; 
+        mix-blend-mode: screen;
+    }
+
+    /* Unique Animations for Speakers Page */
+    @keyframes parchmentFade {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes goldShimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    .contact-scroll {
+        display: block;
+        background-color: #fdf5e6;
+        background-image: url('https://www.transparenttextures.com/patterns/p6.png');
+        width: 90%;
+        max-width: 600px;
+        margin: 100px auto 40px auto;
+        padding: 60px 40px;
+        border: 2px solid #d2b48c;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        position: relative;
+        font-family: 'Playfair Display', serif;
+        color: #1a1a1a;
+        box-sizing: border-box;
+        text-align: center;
+        animation: parchmentFade 1s ease-out;
+    }
+
+    .contact-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 2.8rem;
+        text-transform: uppercase;
+        border-bottom: 4px solid #000;
+        display: inline-block;
+        margin-bottom: 20px;
+        letter-spacing: 2px;
+        line-height: 1.1;
+    }
+
+    .mystery-box {
+        margin: 40px 0;
+        padding: 40px 20px;
+        border: 1px dashed #d2b48c;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .shimmer-text {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.5rem;
+        letter-spacing: 5px;
+        color: #8b7355;
+        background: linear-gradient(90deg, #8b7355, #d2b48c, #8b7355);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: goldShimmer 3s linear infinite;
+    }
+
+    .mystery-subtext {
+        font-style: italic;
+        font-size: 1.1rem;
+        margin-top: 15px;
+        opacity: 0.8;
+        line-height: 1.6;
+    }
+
+    .icon-seal {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        display: block;
+        opacity: 0.6;
+    }
+
+    /* Floating Quill Decoration */
+    .quill-decoration {
+        position: absolute;
+        bottom: -30px;
+        right: -20px;
+        width: 150px;
+        filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.3));
+        pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+        .contact-scroll { margin-top: 140px !important; padding: 40px 20px !important; }
+        .contact-title { font-size: 1.8rem !important; }
+    }
+</style>
+
+<div id="dynamic-bg"></div>
+
+<div class="contact-scroll">
+    <span class="small-caps">Empulse ’26 Presents</span>
+    <h1 class="contact-title">THE ORATORS OF THE ODYSSEY</h1>
+
+    <div class="mystery-box">
+        <i class="fas fa-compass icon-seal"></i>
+        <div class="shimmer-text">SOON TO BE REVEALED</div>
+        <p class="mystery-subtext">
+            "The stars are aligning, yet the fates have not yet spoken their names. 
+            Prepare to meet the captains who have navigated the Unbound Journey."
+        </p>
+    </div>
+
+    <p style="font-size: 0.9rem; opacity: 0.6; letter-spacing: 1px;">
+        STAY THY COURSE, TRAVELER.
+    </p>
+
+    <img src="{{ url_for('static', filename='images/seal.png') }}" class="quill-decoration" alt="decoration">
+</div>
+
+<button class="vintage-menu-trigger" id="menu-btn">
+    <span class="small-caps">※ Menu</span>
+</button>
+
+<div class="menu-backdrop" id="menu-backdrop"></div>
+
+<nav id="side-nav" class="vintage-side-nav">
+    <button class="vintage-close-btn" id="close-btn">&times;</button>
+    <div class="vintage-nav-links">
+        <a href="/" data-bg="static/images/home.png">Home</a>
+        <a href="/events" data-bg="static/images/event.jpg">The Events</a>
+        <a href="/agenda" data-bg="static/images/agenda.avif">Agenda</a>
+        <a href="/speakers" data-bg="static/images/Speakers.jpg">Speakers</a>
+        <a href="/sponsors" data-bg="static/images/sponsors.png">Sponsors</a>
+        <a href="/contact_us" data-bg="static/images/contact_us.jpg">Contact Us</a>
+    </div>
+</nav>
+
+<footer class="vintage-footer">
+    © Empulse’26 | E-Cell Yukta, Cummins College of Engineering, Pune
+</footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>

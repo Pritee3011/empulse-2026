@@ -1,0 +1,285 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+    :root {
+        --parchment: #fdf5e6;
+        --ink: #2c1b0e;
+        --gold: #b8860b;
+    }
+
+    body {
+        background: #121212; 
+        color: var(--ink);
+        font-family: 'Playfair Display', serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    #dynamic-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        background-size: cover;
+        background-position: center;
+        pointer-events: none; /* Critical: Allows clicks to pass through to buttons */
+        opacity: 0.4; /* Adjusted for better content readability */
+    }
+
+    .harbor-container {
+        max-width: 1100px;
+        margin: 80px auto;
+        padding: 20px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .tier-marker {
+        background: linear-gradient(90deg, #8b4513, #b8860b);
+        color: white;
+        padding: 12px 30px;
+        display: inline-block;
+        font-family: 'Cinzel', serif;
+        font-size: 1.6rem;
+        margin: 50px 0 30px 0;
+        border-radius: 0 50px 50px 0;
+        box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+        letter-spacing: 3px;
+    }
+
+    .sponsor-card {
+        background: var(--parchment);
+        background-image: url('https://www.transparenttextures.com/patterns/p6.png');
+        padding: 40px;
+        margin-bottom: 30px;
+        border: 2px solid #d2b48c;
+        box-shadow: 15px 15px 35px rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        transition: transform 0.4s ease;
+        /* Animation Base State */
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    /* Animation Trigger */
+    .reveal-on-scroll.visible {
+        opacity: 1;
+        transform: translateY(0);
+        transition: all 0.8s ease-out;
+    }
+
+    .logo-frame {
+        flex-shrink: 0;
+        width: 180px;
+        height: 180px;
+        background: white;
+        border: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+    }
+
+    .logo-frame img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+    .partner-tag {
+        font-family: 'IM Fell English', serif;
+        font-style: italic;
+        color: #5d4037;
+        display: block;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+    }
+
+    .alliance-invitation {
+        margin-top: 100px;
+        padding: 60px 40px;
+        text-align: center;
+        border: 3px double var(--gold);
+        background: rgba(253, 245, 230, 0.1);
+        color: var(--parchment);
+    }
+
+    .btn-alliance {
+        background: transparent;
+        color: var(--gold);
+        border: 2px solid var(--gold);
+        padding: 15px 35px;
+        font-family: 'Cinzel', serif;
+        text-decoration: none;
+        display: inline-block;
+        margin: 10px;
+        letter-spacing: 2px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-alliance:hover {
+        background: var(--gold);
+        color: #121212;
+        box-shadow: 0 0 30px rgba(184, 134, 11, 0.4);
+    }
+
+    @media (max-width: 768px) {
+        .sponsor-card { flex-direction: column; text-align: center; }
+    }
+</style>
+
+<button class="vintage-menu-trigger" id="menu-btn" style="z-index: 100; cursor: pointer;">
+    <span class="small-caps">※ Menu</span>
+</button>
+
+<div class="menu-backdrop" id="menu-backdrop" style="z-index: 90;"></div>
+
+<nav id="side-nav" class="vintage-side-nav" style="z-index: 105;">
+    <button class="vintage-close-btn" id="close-btn" style="cursor: pointer;">&times;</button>
+    <div class="vintage-nav-links">
+        <a href="/">Home</a>
+        <a href="/events">The Events</a>
+        <a href="/agenda">Agenda</a>
+        <a href="/speakers">Speakers</a>
+        <a href="/sponsors">Sponsors</a>
+        <a href="/contact_us">Contact Us</a>
+    </div>
+</nav>
+
+<div class="harbor-container">
+    <div style="text-align: center; color: var(--parchment); margin-bottom: 60px;">
+        <h1 style="font-family: 'Cinzel', serif; font-size: 3.5rem; letter-spacing: 5px;">Guild of Allies</h1>
+        <p style="font-family: 'IM Fell English', serif; font-size: 1.3rem; font-style: italic;">"Behold the titans who provide the wind for our sails."</p>
+    </div>
+
+    <div class="tier-marker animate__animated animate__fadeInLeft">The Gilded Frigate</div>
+    <div class="sponsor-card reveal-on-scroll">
+        <div class="logo-frame"><img src="/static/images/CJC.jpeg" alt="CJC Edtech"></div>
+        <div class="sponsor-info">
+            <h2 style="font-family: 'Cinzel', serif;">CJC Edtech</h2>
+            <span class="partner-tag">~ Title Sponsor</span>
+            <p>The master architects of our digital fleet, <b>CJC Classes</b> provides the technical compass and core engineering expertise needed to navigate the vast oceans of software development and modern technology.
+    </p>
+        </div>
+    </div>
+
+    <div class="tier-marker animate__animated animate__fadeInLeft">The Golden Galleon</div>
+    <div class="sponsor-card reveal-on-scroll">
+        <div class="logo-frame"><img src="/static/images/Fortune Dairy.jpg" alt="Fortune Dairy"></div>
+        <div class="sponsor-info">
+            <h2 style="font-family: 'Cinzel', serif;">Fortune Dairy</h2>
+            <span class="partner-tag">~ Gold Sponsor</span>
+            <p>Pioneers of farm-fresh purity, ensuring our voyagers stay energized with the finest dairy treasures.</p>
+        </div>
+    </div>
+
+    <div class="tier-marker animate__animated animate__fadeInLeft">The Chartmasters</div>
+    <div class="sponsor-card reveal-on-scroll">
+        <div class="logo-frame"><img src="/static/images/Finlatics.png" alt="Finlatics"></div>
+        <div class="sponsor-info">
+            <h2 style="font-family: 'Cinzel', serif;">Finlatics</h2>
+            <span class="partner-tag">~ Gift Voucher Partner</span>
+            <p>Strategic guides helping our winners master the financial markets and navigate equity seas.</p>
+        </div>
+    </div>
+
+    <div class="sponsor-card reveal-on-scroll">
+        <div class="logo-frame" style="background: #eee;">
+            <p style="font-family: 'Cinzel'; font-weight: bold; color: #1a1a1a;">GHOSTBOX</p> 
+        </div>
+        <div class="sponsor-info">
+            <h2 style="font-family: 'Cinzel', serif;">Ghostbox</h2>
+            <span class="partner-tag">~ Bollywood Pitch Prize Partner</span>
+            <p>Rewarding our most charismatic performers with exclusive hampers fit for the stars of the show.</p>
+        </div>
+    </div>
+
+    <div class="tier-marker animate__animated animate__fadeInLeft">The Supply Fleet</div>
+    <div class="sponsor-card reveal-on-scroll">
+        <div class="logo-frame"><img src="/static/images/balaji_logo.png" alt="Balaji"></div>
+        <div class="sponsor-info">
+            <h2 style="font-family: 'Cinzel', serif;">Balaji Wafers</h2>
+            <span class="partner-tag">~ Munching Partner</span>
+            <p>Providing essential traveler's rations to keep spirits high during intense rounds.</p>
+        </div>
+    </div>
+
+    <div class="sponsor-card reveal-on-scroll">
+        <div class="logo-frame"><img src="/static/images/solanki.jpg" alt="Solanki"></div>
+        <div class="sponsor-info">
+            <h2 style="font-family: 'Cinzel', serif;">Solanki's Milk Cocktail</h2>
+            <span class="partner-tag">~ Kiosk Partner</span>
+            <p>A signature oasis serving refreshing blends to recharge voyagers at the main quadrangle.</p>
+        </div>
+    </div>
+
+    <div class="tier-marker animate__animated animate__fadeInLeft">The Town Criers</div>
+    <div class="sponsor-card reveal-on-scroll">
+        <div class="logo-frame"><img src="/static/images/Campus times pune.jpg" alt="Campus Times"></div>
+        <div class="sponsor-info">
+            <h2 style="font-family: 'Cinzel', serif;">Campus Times Pune</h2>
+            <span class="partner-tag">~ Digital Media Partner</span>
+            <p>The digital herald of student life, broadcasting the exploits of Empulse’26.</p>
+        </div>
+    </div>
+
+    <div class="sponsor-card reveal-on-scroll">
+        <div class="logo-frame"><img src="/static/images/punekar-news-logo.webp" alt="Punekar News"></div>
+        <div class="sponsor-info">
+            <h2 style="font-family: 'Cinzel', serif;">Punekar News</h2>
+            <span class="partner-tag">~ News Partner</span>
+            <p>The trusted voice of the city, cementing our innovation odyssey into local history.</p>
+        </div>
+    </div>
+
+    <div class="alliance-invitation animate__animated animate__fadeInUp">
+        <h2 style="font-family: 'Cinzel', serif; font-size: 2.2rem; letter-spacing: 3px;">Join the Armada</h2>
+        <p style="font-family: 'IM Fell English', serif; font-size: 1.2rem; max-width: 700px; margin: 20px auto;">
+            Is your brand ready to fuel the next great innovation? Set up your trading post.
+        </p>
+        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;">
+            <a href="/contact_us" class="btn-alliance">BECOME A PARTNER</a>
+            <a href="{{ url_for('static', filename='sponsorship brochure (1).pdf') }}" class="btn-alliance" target="_blank">📜 DOWNLOAD BROCHURE</a>
+        </div>
+    </div>
+
+    <footer class="vintage-footer">
+        © Empulse’26 | E-Cell Yukta, Cummins College of Engineering, Pune
+    </footer>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Menu Logic ---
+        const menuBtn = document.getElementById('menu-btn');
+        const closeBtn = document.getElementById('close-btn');
+        const sideNav = document.getElementById('side-nav');
+        const backdrop = document.getElementById('menu-backdrop');
+
+        function toggleMenu() {
+            sideNav.classList.toggle('open');
+            backdrop.classList.toggle('active');
+        }
+
+        if(menuBtn) menuBtn.addEventListener('click', toggleMenu);
+        if(closeBtn) closeBtn.addEventListener('click', toggleMenu);
+        if(backdrop) backdrop.addEventListener('click', toggleMenu);
+
+        // --- Scroll Animation Logic ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Add animate.css class if needed
+                    entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(card => {
+            observer.observe(card);
+        });
+    });
+</script>

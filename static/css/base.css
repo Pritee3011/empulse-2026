@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English&display=swap');
+
+/* Define variables or replace them with hex codes to ensure they render */
+:root {
+    --bg-center: #faebd7;     /* Antique white / cream */
+    --bg-edges: #deb887;      /* Burlywood / darker vignette edge */
+    --text-main: #2c2925;     /* Dark charcoal/brown */
+    --accent-gray: #5c554d;
+    
+    --font-heading: 'Playfair Display', serif;
+    --font-handwriting: 'Caveat', cursive;
+    --font-body: 'Playfair Display', serif; 
+}
+
+/* 1. Set Main Background to Black and allow scrolling */
+body {
+    background: radial-gradient(circle, var(--bg-center) 20%, var(--bg-edges) 150%);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    /* Explicitly allow scrolling */
+    overflow-x: auto;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. Parchment Container with vintage texture */
+.scroll-container, .form-container {
+    background-image: url('/static/images/vintage_bg.png'); 
+    background-size: cover;
+    background-position: center;
+    width: 90%;
+    max-width: 800px;
+    padding: 50px;
+    margin: 40px auto;
+    border: 3px solid #5d4037;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    position: relative;
+    border-radius: 5px;
+    color: #2c1b0e; /* Dark ink color for readability on parchment */
+}
+
+/* 3. Button Styled like "View the Voyage Map" */
+.btn-register, .btn-submit {
+    display: block; 
+    width: fit-content;
+    margin: 30px auto;
+    
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; 
+    padding: 1rem 3rem;
+    background: #2c2925;
+    color: #faebd7;
+    border: 3px solid #1a1816;
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(44, 41, 37, 0.6);
+}
+
+.btn-register:hover, .btn-submit:hover {
+    transform: scale(1.05);
+    color: #FFD700; /* Golden Glow on hover */
+    /* Fixed the syntax error here (removed extra };) */
+    box-shadow: 0 0 40px rgba(44, 41, 37, 0.9), 0 0 20px rgba(222, 184, 135, 0.5);
+}
+/* 4. Heading Styles (Center Aligned) */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase; /* Optional: gives it a more formal "Voyage" feel */
+    letter-spacing: 3px;
+    color: #3e2723; /* A slightly darker brown for emphasis */
+}
+
+/* Specific styling for the main title if needed */
+h1 {
+    font-size: 3rem;
+    border-bottom: 2px solid #5d4037;
+    display: table; /* Shrinks the border to the text width */
+    margin: 0 auto 30px auto; /* Centers the 'table' element */
+    padding-bottom: 10px;
+}
+/* Universal Logistics Bar */
+.event-logistics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    border-top: 2px solid #5d4037;
+    border-bottom: 2px solid #5d4037;
+    padding: 15px 0;
+    margin: 25px 0;
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    background: rgba(44, 41, 37, 0.03);
+}
+
+.log-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.log-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8b4513;
+    font-weight: bold;
+}
+
+.log-value {
+    font-size: 1rem;
+    font-weight: 700;
+}
+.error-msg { color: #b71c1c; font-size: 0.8rem; display: none; margin-top: 5px; font-weight: bold; }
+        input:invalid { border: 2px solid #b71c1c; }
+        .member-section { border-top: 1px dashed #5d4037; margin-top: 20px; padding-top: 15px; }
+        .qr-container { text-align: center; background: rgba(255,255,255,0.5); padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .hidden { display: none; }

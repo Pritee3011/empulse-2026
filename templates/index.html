@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empulse Registration | Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --parchment-glow: #f6e6d5;
+            --ink: #2c1b0e;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* Forces everything onto one screen */
+            font-family: 'Playfair Display', serif;
+            background-color: transparent; 
+        }
+
+        /* 1. E-Cell Branding - Top Left */
+        .brand-logo-top {
+            position: fixed;
+            top: 5px;
+            left: 0px;
+            z-index: 150; /* Stays on the very top layer */
+        }
+        .brand-logo-top img {
+            width: 140px; 
+            height: auto;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3));
+            transition: all 0.3s ease;
+        }
+
+        /* 2. Background Layer - The Bottom */
+        .dynamic-bg.crystal-clear {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1; /* Behind content, in front of body */
+            background-size: cover; 
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: var(--parchment-glow);
+            pointer-events: none;
+        }
+
+        /* 3. Main Action Content - The Middle */
+        .voyage-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center;     
+            height: 100vh;           
+            width: 100%;
+            position: relative;
+            z-index: 1; 
+            gap: 0; /* Zero gap between rows */
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .partner-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--ink);
+            opacity: 0.7;
+            font-weight: 700;
+            margin: 0;
+            padding: 0;
+        }
+
+        .logo-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .partner-badge {
+            max-width: 115px;
+            max-height: 50px; 
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0px 3px 5px rgba(0,0,0,0.1));
+        }
+
+        /* MASSIVE EMPULSE LOGO */
+        .main-empulse-logo {
+            width: 100%;
+            max-width: 1100px; /* Large for laptops */
+            max-height: 50vh;  /* Takes up half the screen height */
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0px 8px 15px rgba(0,0,0,0.2));
+            /* NEGATIVE MARGINS pull partners closer to the text */
+            margin-top: -30px; 
+            margin-bottom: -30px; 
+            padding: 0;
+        }
+
+        
+
+        
+
+        /* 5. Mobile Optimization */
+        @media (max-width: 768px) {
+            .brand-logo-top { top: 15px; left: 15px; }
+            .brand-logo-top img { width: 100px; }
+            .partner-label { font-size: 0.6rem; letter-spacing: 2px; }
+            .partner-badge { max-width: 75px; max-height: 35px; }
+            .main-empulse-logo { 
+                max-width: 115vw; /* Slightly wider than screen for impact */
+                max-height: 40vh; 
+                margin-top: -15px;
+                margin-bottom: -15px;
+            }
+            .logo-row { gap: 0.8rem; }
+            .vintage-footer { font-size: 0.65rem; padding: 5px; }
+        }
+    </style>
+</head>
+<body>
+    <button class="vintage-menu-trigger" id="menu-btn" style="z-index: 1000; position: fixed;">
+        <span class="small-caps">※ Menu</span>
+    </button>
+
+    <div class="menu-backdrop" id="menu-backdrop" style="z-index: 900;"></div>
+
+    <nav id="side-nav" class="vintage-side-nav" style="z-index: 1001; position: fixed; height: 100vh; top: 0;">
+        <button class="vintage-close-btn" id="close-btn">&times;</button>
+        <div class="vintage-nav-links">
+            <a href="/" data-bg="static/images/home.png">Home</a>
+            <a href="/events" data-bg="static/images/event.jpg">The Events</a>
+            <a href="/agenda" data-bg="static/images/agenda.avif">Agenda</a>
+            <a href="/speakers" data-bg="static/images/Speakers.jpg">Speakers</a>
+            <a href="/sponsors" data-bg="static/images/sponsors.png">Sponsors</a>
+            <a href="/contact_us" data-bg="static/images/contact_us.jpg">Contact Us</a>
+        </div>
+    </nav>
+
+    <div class="brand-logo-top">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="E-Cell Yukta Logo">
+    </div>
+
+    <div id="dynamic-bg" class="dynamic-bg crystal-clear" style="background-image: url('{{ url_for('static', filename='images/empulse.svg') }}');"></div>
+
+    <div class="home-layout-wrapper" style="width: 100vw; height: 100vh; overflow: hidden; position: fixed; top: 0; left: 0; box-sizing: border-box;">
+        <div class="voyage-content">
+            <img src="{{ url_for('static', filename='images/EMPULSE (2).png') }}" alt="Empulse Odyssey" class="main-empulse-logo">
+        </div>
+    </div>
+    
+    <div style="position: fixed; bottom: 0; width: 100vw; z-index: 10;">
+        <footer class="vintage-footer">
+            © Empulse’26 | E-Cell Yukta, Cummins College of Engineering, Pune
+        </footer>
+    </div>
+
+    <script>
+        const DEFAULT_BG = "{{ url_for('static', filename='images/empulse.svg') }}";
+
+        // Logic to ensure the menu works perfectly on mobile by forcing classes
+        const menuBtn = document.getElementById('menu-btn');
+        const closeBtn = document.getElementById('close-btn');
+        const sideNav = document.getElementById('side-nav');
+        const backdrop = document.getElementById('menu-backdrop');
+
+        function toggleMenu() {
+            sideNav.classList.toggle('open');
+            backdrop.classList.toggle('active');
+            
+            // Fix for mobile: Prevent the background from jumping when menu is open
+            if (sideNav.classList.contains('open')) {
+                document.body.style.position = 'fixed';
+            } else {
+                document.body.style.position = '';
+            }
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+        backdrop.addEventListener('click', toggleMenu);
+    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

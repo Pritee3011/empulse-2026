@@ -1,0 +1,309 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+    :root {
+        --parchment: #fdf5e6;
+        --ink: #2c1b0e;
+        --gold: #8b4513;
+    }
+
+    body {
+        /* The fixed background map */
+        background: black ;
+        color: var(--ink);
+        font-family: 'Playfair Display', serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Fixed background map image */
+    #dynamic-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        background-size: cover;
+        background-position: center;
+        opacity: 0.15;
+        mix-blend-mode: multiply;
+        filter: sepia(0.6) grayscale(0.8);
+        pointer-events: none;
+    }
+
+    .odyssey-container {
+        max-width: 1000px;
+        margin: 80px auto; /* Margin top to clear the menu button */
+        padding: 20px;
+        position: relative;
+    }
+
+    /* Timeline Styling */
+    .timeline-path {
+        position: relative;
+        padding-left: 50px;
+        border-left: 3px dashed var(--gold);
+        margin-left: 20px;
+    }
+
+    .day-marker {
+        background: var(--gold);
+        color: white;
+        padding: 10px 25px;
+        display: inline-block;
+        font-family: 'Cinzel', serif;
+        font-size: 1.5rem;
+        margin: 40px 0 20px -78px;
+        border-radius: 0 50px 50px 0;
+        box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+        z-index: 5;
+        position: relative;
+    }
+
+    /* Event Card (The Parchment) */
+    .event-card {
+        background: var(--parchment);
+        background-image: url('https://www.transparenttextures.com/patterns/p6.png'); 
+        padding: 30px;
+        margin-bottom: 40px;
+        border: 2px solid #d2b48c;
+        box-shadow: 10px 10px 30px rgba(0,0,0,0.5);
+        position: relative;
+        transition: transform 0.3s ease;
+        overflow: hidden;
+    }
+
+    .event-card:hover { transform: scale(1.02) rotate(0.5deg); }
+
+    .event-card::before {
+        content: "⚓";
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 1.5rem;
+        opacity: 0.2;
+    }
+
+    .event-time {
+        font-family: 'IM Fell English', serif;
+        font-weight: bold;
+        color: var(--gold);
+        font-size: 1.2rem;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .event-title {
+        font-family: 'Cinzel', serif;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(139, 69, 19, 0.2);
+        display: inline-block;
+    }
+
+    .venue-tag {
+        font-size: 0.85rem;
+        background: rgba(139, 69, 19, 0.1);
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-style: italic;
+    }
+
+    .tagline {
+        font-family: 'Caveat', cursive;
+        font-size: 1.4rem;
+        color: #5d4037;
+        margin: 5px 0 15px 0;
+    }
+
+    .prize-badge {
+        float: right;
+        background: #ffd700;
+        color: #000;
+        padding: 5px 10px;
+        font-weight: bold;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        border: 1px solid #b8860b;
+    }
+
+    /* Animation classes */
+    .reveal-on-scroll {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s ease-out;
+    }
+
+    .reveal-on-scroll.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+
+
+<button class="vintage-menu-trigger" id="menu-btn" style="z-index: 100;">
+    <span class="small-caps">※ Menu</span>
+</button>
+
+<div class="menu-backdrop" id="menu-backdrop" style="z-index: 90;"></div>
+
+<nav id="side-nav" class="vintage-side-nav" style="z-index: 105;">
+    <button class="vintage-close-btn" id="close-btn">&times;</button>
+    <div class="vintage-nav-links">
+        <a href="/">Home</a>
+        <a href="/events">The Events</a>
+        <a href="/agenda">Agenda</a>
+        <a href="/speakers">Speakers</a>
+        <a href="/sponsors">Sponsors</a>
+        <a href="/contact_us">Contact Us</a>
+    </div>
+</nav>
+
+<div class="odyssey-container">
+    <div style="text-align: center; color:#fdf5e6 ; margin-bottom: 60px;">
+        <h1 style="font-family: 'Cinzel', serif; font-size: 3.5rem; letter-spacing: 5px;">The Manifest</h1>
+        <p style="font-family: 'IM Fell English', serif; font-style: italic;">"A journey of a thousand miles begins with a single step into the unknown."</p>
+    </div>
+
+    <div class="timeline-path">
+        
+        <div class="day-marker animate__animated animate__fadeInLeft">Day 1: 17th April</div>
+        
+        <div class="event-card reveal-on-scroll">
+            <span class="event-time">16:30 </span>
+            <h2 class="event-title">Inauguration Ceremony</h2>
+            <p class="tagline">~ Be there at the beginning of something extraordinary.</p>
+            <span class="venue-tag">📍 KB Joshi Auditorium</span>
+            <p style="margin-top:15px;">Kickstart Empulse’26 with dynamic voices and exciting speakers to ignite your entrepreneurial mindset.</p>
+        </div>
+
+
+        <div class="day-marker">Day 2: 18th April</div>
+
+        <div class="event-card reveal-on-scroll">
+            <h2 class="event-title">Startup Showcase</h2>
+             <span class="event-time">10:00  Onwards</span>
+            <p class="tagline">~ Where Innovation Comes Alive</p>
+            <span class="venue-tag">📍 Event Arena</span>
+            <p style="margin-top:15px;">A vibrant space where ideas turn into reality. Discover cutting-edge tech ventures and interact with founders.</p>
+        </div>
+
+        <div class="event-card reveal-on-scroll">
+            <div class="prize-badge">Pool: ₹9,000</div>
+            <span class="event-time">10:00  Onwards</span>
+            <h2 class="event-title">Sift Through Wreckage</h2>
+            <p class="tagline">~ From Ruin to Revenue</p>
+            <span class="venue-tag">📍 Mechanical Auditorium</span>
+            <p style="margin-top:10px;">Transform a failed business into a successful startup. Identify hidden gems and pivot strategically.</p>
+        </div>
+
+        <div class="event-card reveal-on-scroll">
+            <div class="prize-badge">Pool: ₹12,000</div>
+            <span class="event-time">10:00 Onwards </span>
+            <h2 class="event-title">Business Hackathon</h2>
+            <p class="tagline">~ Dont miss out, have a best experience.</p>
+            <span class="venue-tag">📍 KB Joshi Auditorium</span>
+            <p style="margin-top:15px;">Have a great time competing in the Business Hackathon!</p>
+        </div>
+
+        <div class="event-card reveal-on-scroll">
+            <span class="event-time">10:00 Onwards</span>
+            <h2 class="event-title">Table Talks</h2>
+            <p class="tagline">~ Different Tables, Different Perspectives</p>
+            <span class="venue-tag">📍 Mechanical Conference Room</span>
+            <p style="margin-top:10px;">Rotational mentorship with expert mentors across scaling, funding, and market entry.</p>
+        </div>
+
+        <div class="day-marker">Day 3: 19th April</div>
+
+         <div class="event-card reveal-on-scroll">
+            <h2 class="event-title">Startup Showcase</h2>
+             <span class="event-time">10:00  Onwards</span>
+            <p class="tagline">~ Where Innovation Comes Alive</p>
+            <span class="venue-tag">📍 Event Arena</span>
+            <p style="margin-top:15px;">A vibrant space where ideas turn into reality. Discover cutting-edge tech ventures and interact with founders.</p>
+        </div>
+
+        <div class="event-card reveal-on-scroll">
+            <div class="prize-badge">Pool: ₹12,000</div>
+            <span class="event-time">10:00 Onwards </span>
+            <h2 class="event-title">Business Hackathon</h2>
+            <p class="tagline">~ Dont miss out, have a best experience.</p>
+            <span class="venue-tag">📍 KB Joshi Auditorium</span>
+            <p style="margin-top:15px;">Have a great time competing in the Business Hackathon!</p>
+        </div>
+
+        <div class="event-card reveal-on-scroll">
+            <div class="prize-badge">Pool: ₹8,000</div>
+            <span class="event-time">09:00 Onwards </span>
+            <h2 class="event-title">Investify</h2>
+            <p class="tagline">~ ₹100 se shuru, business mindset tak!</p>
+            <span class="venue-tag">📍 Instrumentation Auditorium</span>
+            <p style="margin-top:10px;">Build a micro-business with limited capital. Test your execution and strategy.</p>
+        </div>
+
+
+        <div class="event-card reveal-on-scroll">
+            <div class="prize-badge">Pool: ₹8,000</div>
+            <span class="event-time">10:00 Onwards </span>
+            <h2 class="event-title">Bollywood Pitching</h2>
+            <p class="tagline">~ Pitch like a star</p>
+            <span class="venue-tag">📍 Main Quadrangle</span>
+            <p style="margin-top:10px;">Blend drama and business strategy. Pitch products in the shoes of iconic Bollywood characters.</p>
+        </div>
+
+        <div class="event-card reveal-on-scroll">
+            <span class="event-time">16:00 Onwards </span>
+            <h2 class="event-title">Pannel Discussion</h2>
+            <p class="tagline">~ Absorb insights from industry experts</p>
+            <span class="venue-tag">📍 KB Joshi Auditorium</span>
+            <p style="margin-top:10px;">Discuss and learn from industry experts about the latest trends and opportunities in the business world.</p>
+        </div>
+        <div class="event-card reveal-on-scroll">
+            <span class="event-time">16:00 Onwards </span>
+            <h2 class="event-title">Prize Distribution and Validictory</h2>
+            <p class="tagline">~ Shoutout to our winners</p>
+            <span class="venue-tag">📍 KB Joshi Auditorium</span>
+            <p style="margin-top:10px;">Final Destination of our voyage, left with treasured memories and experiences.</p>
+        </div>
+
+    </div>
+</div>
+
+<footer class="vintage-footer">
+        © Empulse’26 | E-Cell Yukta, Cummins College of Engineering, Pune
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Menu Logic
+        const menuBtn = document.getElementById('menu-btn');
+        const closeBtn = document.getElementById('close-btn');
+        const sideNav = document.getElementById('side-nav');
+        const backdrop = document.getElementById('menu-backdrop');
+
+        function toggleMenu() {
+            sideNav.classList.toggle('open');
+            backdrop.classList.toggle('active');
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+        backdrop.addEventListener('click', toggleMenu);
+
+        // Scroll Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible', 'animate__animated', 'animate__fadeInUp');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(card => {
+            observer.observe(card);
+        });
+    });
+</script>

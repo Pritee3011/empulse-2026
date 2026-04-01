@@ -1,0 +1,267 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Allow scrolling for footer and page content, plus vintage paper background */
+        body { 
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            margin: 0;
+            padding: 0;
+            /* Vintage cream fallback and radial gradient */
+            background-color: #faebd7; 
+            background-image: radial-gradient(circle, #faebd7 20%, #deb887 150%);
+        }
+
+        /* ========================================= */
+        /* PART 1: CINEMATIC FULL-SCREEN INITIAL VIEW*/
+        /* ========================================= */
+        .voyage-center-stage {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .btn-unfurl-map {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            padding: 1.5rem 4rem;
+            background: #2c2925;
+            color: #faebd7;
+            border: 3px solid #1a1816;
+            cursor: pointer;
+            position: relative;
+            letter-spacing: 2px;
+            animation: lantern-pulse 2.5s infinite;
+            transition: all 0.3s ease;
+            margin: 2rem 0;
+        }
+
+        .btn-unfurl-map:hover {
+            transform: scale(1.05);
+            color: #FFD700;
+        }
+
+        @keyframes lantern-pulse {
+            0% { box-shadow: 0 0 15px rgba(44, 41, 37, 0.6); }
+            50% { box-shadow: 0 0 40px rgba(44, 41, 37, 0.9), 0 0 20px rgba(222, 184, 135, 0.5); }
+            100% { box-shadow: 0 0 15px rgba(44, 41, 37, 0.6); }
+        }
+
+        /* ========================================= */
+        /* PART 2: MODAL POP-UP (STRICTLY HIDDEN)    */
+        /* ========================================= */
+        .map-modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(15, 12, 10, 0.98); /* Solid dark backdrop */
+            z-index: 900; /* Extremely high z-index to stay on top */
+            
+            /* THIS PREVENTS THE OVERLAP: */
+            opacity: 0;
+            visibility: hidden; 
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* JavaScript applies this class to show the map */
+        .map-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .map-wrapper {
+            position: relative;
+            max-width: 95vw;
+            max-height: 80vh;
+            /* Start hidden for the wax animation */
+            clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%);
+            opacity: 0;
+        }
+
+        .map-wrapper.animate-wax {
+            animation: waxCandleReveal 3.5s forwards cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes waxCandleReveal {
+            0% { clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%); opacity: 0; }
+            10% { opacity: 1; }
+            30% { clip-path: polygon(0% 0%, 50% 10%, 50% 50%, 10% 50%); }
+            60% { clip-path: polygon(0% 0%, 100% 0%, 50% 90%, 0% 90%); }
+            100% { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); opacity: 1; }
+        }
+
+        .map-modal-image {
+            width: auto; height: auto;
+            max-width: 95vw; max-height: 80vh;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* RESPONSIVE PINS (Percentage based to prevent misalignment) */
+        .map-pin {
+            position: absolute;
+            width: 14%; height: 12%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        
+        .map-pin:hover {
+            background: rgba(255, 215, 0, 0.25);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+
+        /* Instruction Banner */
+        .voyage-instruction-banner {
+            margin-top: 20px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: #FFD700;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 1px;
+            animation: faint-glow 3s infinite alternate;
+        }
+        .btn-rulebook:hover {
+            background: #2c2925;
+            color: #faebd7;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        @keyframes faint-glow {
+            from { opacity: 0.7; text-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+            to { opacity: 1; text-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="dynamic-bg" class="dynamic-bg" style="background-image: url('{{ url_for('static', filename='images/event.jpg') }}'); position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -10; background-size: cover; background-position: center;"></div>
+
+   <button class="vintage-menu-trigger" id="menu-btn">
+    <span class="small-caps">※ Menu</span>
+</button>
+
+<div class="menu-backdrop" id="menu-backdrop"></div>
+
+<nav id="side-nav" class="vintage-side-nav">
+    <button class="vintage-close-btn" id="close-btn">&times;</button>
+    
+    <div class="vintage-nav-links">
+        <a href="/" data-bg="static/images/home.png">Home</a>
+        <a href="/events" data-bg="static/images/event.jpg">The Events</a>
+        <a href="/agenda" data-bg="static/images/agenda.avif">Agenda</a>
+        <a href="/speakers" data-bg="static/images/Speakers.jpg">Speakers</a>
+        <a href="/sponsors" data-bg="static/images/sponsors.png">Sponsors</a>
+        <a href="/contact_us" data-bg="static/images/contact_us.jpg">Contact Us</a>
+    </div>
+</nav>
+
+    <main class="voyage-center-stage">
+        <span class="small-caps" style="font-size: 1.5rem; font-weight: bold; color: #2c2925; background: rgba(250, 235, 215, 0.8); padding: 5px 15px; border-radius: 5px;">※ Your Next Adventure Awaits ※</span>
+        
+        <button id="view-map-btn" class="btn-unfurl-map">
+           View the Voyage Map
+        </button>
+
+        <a href="{{ url_for('static', filename='Empulse 2026 Rulebook.pdf') }}" download class="btn-rulebook">
+            📜 Consult the Voyage Rulebook
+        </a>
+        
+        <p style="font-family: 'Caveat', cursive; font-size: 4rem; color: #1a1816; margin-top: 1rem; text-shadow: 2px 2px 4px rgba(250, 235, 215, 0.8);">
+           Click the button above to explore and register for events...
+        </p>
+    </main>
+
+    <div id="map-modal" class="map-modal-overlay">
+        
+        <button class="vintage-close-btn" id="close-map-btn" style="position: absolute; top: 20px; right: 40px; z-index: 950; color: white; font-size: 5rem; background: none; border: none; cursor: pointer; transition: color 0.3s;">&times;</button>
+        
+        <div id="reveal-box" class="map-wrapper">
+            <img src="{{ url_for('static', filename='images/map.png') }}" alt="Vintage Voyage Map" class="map-modal-image">
+            
+            <a href="/events/bollywood-pitch" class="map-pin" style="top: 23%; left: 42%;" title="Bollywood Pitch"></a>
+            <a href="/events/investify" class="map-pin" style="top: 30%; left: 79%;" title="Investify"></a>
+            <a href="/events/hackathon" class="map-pin" style="top: 52%; left: 35%;" title="Business Hackathon"></a>
+            <a href="/events/table-talks" class="map-pin" style="top: 88%; left:26%;" title="Table Talks"></a>
+            <a href="/events/startup-showcase" class="map-pin" style="top: 67%; left: 55%;" title="Startup Showcase"></a>
+            <a href="/events/wreckage" class="map-pin" style="top: 89%; left: 84%;" title="Sift Through Wreckage"></a>
+        
+        </div>
+
+        <div class="voyage-instruction-banner">
+            ※ The journey begins here : Click upon a destination's seal to embark on that expedition. ※
+        </div>
+    </div>
+    <footer style="position: fixed; left: 0; bottom: 0; width: 100%; text-align: center; margin: 0; padding: 0.7rem 0; font-size: 0.8rem; color: var(--parchment); opacity: 0.6; background: rgba(250, 235, 215, 0.9); z-index: 15;">
+        © Empulse’26 | E-Cell Yukta, Cummins College of Engineering, Pune
+    </footer>
+
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Navigation Logic (From your snippet) ---
+            const menuBtn = document.getElementById('menu-btn');
+            const closeBtn = document.getElementById('close-btn');
+            const sideNav = document.getElementById('side-nav');
+            const backdrop = document.getElementById('menu-backdrop');
+            const dynamicBg = document.getElementById('dynamic-bg');
+            const navLinks = document.querySelectorAll('.vintage-nav-links a');
+
+            menuBtn.addEventListener('click', () => {
+                sideNav.classList.add('open');
+                backdrop.classList.add('active');
+            });
+
+            const closeMenu = () => {
+                sideNav.classList.remove('open');
+                backdrop.classList.remove('active');
+            };
+
+            closeBtn.addEventListener('click', closeMenu);
+            backdrop.addEventListener('click', closeMenu);
+
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    const newBg = this.getAttribute('data-bg');
+                    if(newBg) {
+                        // Ensures the path resolves correctly from the static folder
+                        dynamicBg.style.backgroundImage = `url('/${newBg}')`;
+                    }
+                });
+            });
+
+            // --- Map Modal Logic ---
+            const mapModal = document.getElementById('map-modal');
+            const viewMapBtn = document.getElementById('view-map-btn');   
+            const closeMapBtn = document.getElementById('close-map-btn');
+            const revealBox = document.getElementById('reveal-box');
+
+            viewMapBtn.addEventListener('click', () => {
+                mapModal.classList.add('active'); // Makes the dark background visible
+                revealBox.classList.remove('animate-wax');
+                void revealBox.offsetWidth; // Force a browser repaint to reset animation
+                revealBox.classList.add('animate-wax'); // Starts the melt effect
+            });
+
+            closeMapBtn.addEventListener('click', () => {
+                mapModal.classList.remove('active'); // Hides the map
+                revealBox.classList.remove('animate-wax');
+            });
+        });
+    </script>
