@@ -139,92 +139,67 @@ def startup_showcase_rules():
 # --- REGISTRATION SUBMISSION ---
 @app.route('/submit_registration', methods=['POST'])
 def submit():
-    try:
-        form_data = request.form.to_dict()
-        raw_event_name = form_data.get('event_name', 'General_Registrations')
-        collection_name = raw_event_name.lower().replace(" ", "_").replace("’", "").replace("'", "")
+    form_data = request.form.to_dict()
+    raw_event_name = form_data.get('event_name', 'General_Registrations')
+    collection_name = raw_event_name.lower().replace(" ", "_").replace("’", "").replace("'", "")
 
-        # 1. Cloudinary Upload Logic
-        if 'screenshot' in request.files:
-            file = request.files['screenshot']
-            if file and file.filename != '':
-                try:
-                    upload_result = cloudinary.uploader.upload(
-                        file, 
-                        folder=f"empulse_2026/{collection_name}",
-                        public_id=f"{form_data.get('team_name', 'unknown')}_{uuid.uuid4().hex[:4]}"
-                    )
-                    form_data['payment_proof_url'] = upload_result['secure_url']
-                except Exception as e:
-                    print(f"Upload failed: {e}")
-                    form_data['payment_proof_url'] = "Failed_to_upload"
+    if 'screenshot' in request.files:
+        file = request.files['screenshot']
+        if file and file.filename != '':
+            try:
+                upload_result = cloudinary.uploader.upload(
+                    file, 
+                    folder=f"empulse_2026/{collection_name}",
+                    public_id=f"{form_data.get('team_name', 'unknown')}_{uuid.uuid4().hex[:4]}"
+                )
+                form_data['payment_proof_url'] = upload_result['secure_url']
+            except Exception as e:
+                print(f"Upload failed: {e}")
+                form_data['payment_proof_url'] = "Failed_to_upload"
 
-        # 2. Database Storage
-        form_data['timestamp'] = datetime.now()
-        mongo.db[collection_name].insert_one(form_data)
+    form_data['timestamp'] = datetime.now()
+    mongo.db[collection_name].insert_one(form_data)
 
-        # 3. Async Email Logic
-        recipients = [form_data.get(f'm{i}_email') for i in range(1, 6) if form_data.get(f'm{i}_email')]
-        recipients = list(set([e for e in recipients if "@" in e]))
+    # Email Logic
+    recipients = [form_data.get(f'm{i}_email') for i in range(1, 6) if form_data.get(f'm{i}_email')]
+    recipients = list(set([e for e in recipients if "@" in e]))
 
-        if recipients:
-            msg = Message(
-                subject=f"Registration Confirmed: {raw_event_name}",
-                sender=app.config['MAIL_USERNAME'],
-                recipients=recipients
-            )
-            
-            # Plain Text Fallback
-            msg.body = f"Greetings Team {form_data.get('team_name')}, your registration for {raw_event_name} is confirmed. Join our WhatsApp: https://chat.whatsapp.com/F2JN4fCz50P2prDJqpas2S"
-            
-            # Professional HTML Version
-            msg.html = f"""
-            <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 10px; overflow: hidden;">
-                <div style="background: #8b4513; color: white; padding: 20px; text-align: center;"><h1>Voyage Confirmed!</h1></div>
-                <div style="padding: 20px;">
-                    <p>Greetings Team <strong>{form_data.get('team_name')}</strong>,</p>
-                    <p>Your registration for <strong>{raw_event_name}</strong> at Empulse'26 has been successfully recorded.</p>
-                    <div style="background: #e8f5e9; border-left: 5px solid #25d366; padding: 15px; margin: 20px 0;">
-                        <strong>⚓ Stay Updated:</strong><br>Join the WhatsApp community for real-time updates:<br>
-                        <a href="https://chat.whatsapp.com/F2JN4fCz50P2prDJqpas2S" style="display: inline-block; margin-top: 10px; padding: 10px 15px; background: #25d366; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Join WhatsApp Community</a>
-                    </div>
-                    <p>Warm regards,<br><strong>Team E-Cell Yukta</strong></p>
-                </div>
-            </div>
-            """
-            # Fire and forget email in background
-            threading.Thread(target=send_async_email, args=(app, msg)).start()
+    if recipients:
+        try:
+            msg = Message(f"Registration Confirmed: {raw_event_name}",
+                          sender=app.config['MAIL_USERNAME'],
+                          recipients=recipients)
+            msg.body = f"Greetings Team {form_data.get('team_name')},\n\nYour registration for {raw_event_name} has been recorded.\n\nRegards,\nE-Cell Yukta"
+            mail.send(msg)
+        except Exception as e:
+            print(f"Mail failed: {e}")
 
-        # Redirect to avoid double-submission
-        return redirect(url_for('success_page', event=raw_event_name))
-
-    except Exception as e:
-        print(f"Critical Submit Error: {e}")
-        return f"Submission failed: {e}", 500
+    return render_template('success.html', event=raw_event_name)
 
 # --- STARTUP SHOWCASE ---
+@app.route('/events/register-showcase')
+def showcase_reg_page():
+    return render_template('startup-reg.html')
+
 @app.route('/submit_showcase', methods=['POST'])
 def submit_showcase():
+    data = request.form.to_dict()
+    unique_id = f"ECYUKTA-2026-{str(uuid.uuid4())[:4].upper()}"
+    data['unique_id'] = unique_id
+    data['registration_date'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    mongo.db.startup_showcase.insert_one(data)
+
     try:
-        data = request.form.to_dict()
-        unique_id = f"ECYUKTA-2026-{str(uuid.uuid4())[:4].upper()}"
-        data['unique_id'] = unique_id
-        data['registration_date'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        mongo.db.startup_showcase.insert_one(data)
-
-        # Async Mail for Showcase
         msg = Message(f"Startup Showcase ID: {unique_id}",
                       sender=app.config['MAIL_USERNAME'],
                       recipients=[data['email']])
-        msg.body = f"Hello {data['full_name']},\n\nYour ID: {unique_id}\nJoin WhatsApp: https://chat.whatsapp.com/F2JN4fCz50P2prDJqpas2S\n\nRegards, E-Cell Yukta"
-        
-        threading.Thread(target=send_async_email, args=(app, msg)).start()
-
-        return redirect(url_for('success_page', event="Startup Showcase", uid=unique_id))
+        msg.body = f"Hello {data['full_name']},\n\nYour ID: {unique_id}\n\nRegards,\nE-Cell Yukta"
+        mail.send(msg)
     except Exception as e:
-        print(f"Showcase Error: {e}")
-        return "Internal Error", 500
+        print(f"Mail failed: {e}")
+
+    return render_template('success.html', event="Startup Showcase", unique_id=unique_id)
 
 @app.errorhandler(413)
 def request_entity_too_large(error):
