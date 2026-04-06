@@ -30,7 +30,8 @@ mongo = PyMongo(app)
 app.config.update(
     MAIL_SERVER='smtp.gmail.com',
     MAIL_PORT=587,
-    MAIL_USE_TLS=True,
+    MAIL_USE_TLS=False,         # Disabled TLS
+    MAIL_USE_SSL=True,          # Enabled SSL
     MAIL_USERNAME=os.environ.get("MAIL_USERNAME"),
     MAIL_PASSWORD=os.environ.get("MAIL_PASSWORD"), # 16-character App Password
     MAX_CONTENT_LENGTH=5 * 1024 * 1024
