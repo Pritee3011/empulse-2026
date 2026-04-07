@@ -209,7 +209,7 @@ def submit_showcase():
     
         threading.Thread(target=send_email_async, args=(app, msg)).start()
     except Exception as e:
-    print(f"Mail failed: {e}")
+        print(f"Mail failed: {e}")
   
     return render_template('success.html', event="Startup Showcase", unique_id=unique_id)
 
