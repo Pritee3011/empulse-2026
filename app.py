@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_pymongo import PyMongo
-from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
 import os
 import uuid 
@@ -31,14 +30,8 @@ RENDER_EXTERNAL_URL = "https://empulse-2026.onrender.com/"
 app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
 mongo = PyMongo(app)
 
-app.config['MAIL_SERVER'] = 'smtp.sendgrid.net'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'apikey'
 app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD")
 app.config['MAIL_DEFAULT_SENDER'] = os.environ.get("MAIL_DEFAULT_SENDER")
-
-mail = Mail(app)
 
 # Security: Limit uploads to 5MB
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
@@ -136,14 +129,6 @@ def bollywood_rules():
 @app.route('/events/startup-showcase')
 def startup_showcase_rules():
     return render_template('startup-showcase.html')
-
-def send_email_async(app, msg):
-    with app.app_context():
-        try:
-            mail.send(msg)
-        except Exception as e:
-            print(f"Mail failed: {e}")
-
 # --- REGISTRATION SUBMISSION ---
 @app.route('/submit_registration', methods=['POST'])
 def submit():
@@ -157,7 +142,7 @@ def submit():
         if file and file.filename != '':
             try:
                 upload_result = cloudinary.uploader.upload(
-                    file, 
+                    file,
                     folder=f"empulse_2026/{collection_name}",
                     public_id=f"{form_data.get('team_name', 'unknown')}_{uuid.uuid4().hex[:4]}"
                 )
@@ -166,28 +151,62 @@ def submit():
                 print(f"Upload failed: {e}")
                 form_data['payment_proof_url'] = "Failed_to_upload"
 
+    # --- Save to DB ---
     form_data['timestamp'] = datetime.now()
     mongo.db[collection_name].insert_one(form_data)
 
-    # --- Prepare email ---
+    # --- Prepare email recipients ---
     recipients = [form_data.get(f'm{i}_email') for i in range(1, 6) if form_data.get(f'm{i}_email')]
     recipients = list(set([e for e in recipients if "@" in e]))
 
+    # --- Send Email via SendGrid API ---
     if recipients:
-        msg = Message(
-            f"Registration Confirmed: {raw_event_name}",
-            sender=app.config['MAIL_USERNAME'],
-            recipients=recipients
-        )
-        msg.body = f"""Greetings Team {form_data.get('team_name')},
-                  Your registration for {raw_event_name} has been recorded.
-                  Regards,
-                  E-Cell Yukta"""
-        # 🔥 Send email in background thread
-        threading.Thread(target=send_email_async, args=(app, msg)).start()
+        subject = f"Registration Confirmed: {raw_event_name}"
+        content = f"""Greetings Team {form_data.get('team_name')},
 
+Your registration for {raw_event_name} has been successfully recorded.
+
+Regards,
+E-Cell Yukta"""
+
+        threading.Thread(
+            target=send_email_api,
+            args=(recipients, subject, content)
+        ).start()
+
+    # --- Instant Response ---
     return render_template('success.html', event=raw_event_name)
+def send_email_api(to_emails, subject, content):
+    try:
+        response = requests.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            headers={
+                "Authorization": f"Bearer {os.environ.get('MAIL_PASSWORD')}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "personalizations": [
+                    {
+                        "to": [{"email": email} for email in to_emails]
+                    }
+                ],
+                "from": {
+                    "email": os.environ.get("MAIL_DEFAULT_SENDER")
+                },
+                "subject": subject,
+                "content": [
+                    {
+                        "type": "text/plain",
+                        "value": content
+                    }
+                ]
+            }
+        )
 
+        print("SendGrid Status:", response.status_code)
+
+    except Exception as e:
+        print("Email API failed:", e)
 # --- STARTUP SHOWCASE ---
 @app.route('/events/register-showcase')
 def showcase_reg_page():
@@ -203,12 +222,19 @@ def submit_showcase():
     mongo.db.startup_showcase.insert_one(data)
 
     try:
-        msg = Message(f"Startup Showcase ID: {unique_id}",
-                      sender=app.config['MAIL_USERNAME'],
-                      recipients=[data['email']])
-        msg.body = f"Hello {data['full_name']},\n\nYour ID: {unique_id}\n\nRegards,\nE-Cell Yukta"
-    
-        threading.Thread(target=send_email_async, args=(app, msg)).start()
+        if data.get('email'):
+            subject = f"Startup Showcase ID: {unique_id}"
+            content = f"""Hello {data['full_name']},
+
+Your Startup Showcase ID: {unique_id}
+
+Regards,
+E-Cell Yukta"""
+
+            threading.Thread(
+                target=send_email_api,
+                args=([data['email']], subject, content)
+            ).start()
     except Exception as e:
         print(f"Mail failed: {e}")
   
