@@ -208,6 +208,9 @@ def submit_showcase():
         msg.body = f"Hello {data['full_name']},\n\nYour ID: {unique_id}\n\nRegards,\nE-Cell Yukta"
     
         threading.Thread(target=send_email_async, args=(app, msg)).start()
+    except Exception as e:
+    print(f"Mail failed: {e}")
+  
     return render_template('success.html', event="Startup Showcase", unique_id=unique_id)
 
 @app.errorhandler(413)
