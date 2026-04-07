@@ -136,6 +136,13 @@ def bollywood_rules():
 def startup_showcase_rules():
     return render_template('startup-showcase.html')
 
+def send_email_async(app, msg):
+    with app.app_context():
+        try:
+            mail.send(msg)
+        except Exception as e:
+            print(f"Mail failed: {e}")
+
 # --- REGISTRATION SUBMISSION ---
 @app.route('/submit_registration', methods=['POST'])
 def submit():
@@ -143,6 +150,7 @@ def submit():
     raw_event_name = form_data.get('event_name', 'General_Registrations')
     collection_name = raw_event_name.lower().replace(" ", "_").replace("’", "").replace("'", "")
 
+    # --- File Upload ---
     if 'screenshot' in request.files:
         file = request.files['screenshot']
         if file and file.filename != '':
@@ -160,19 +168,22 @@ def submit():
     form_data['timestamp'] = datetime.now()
     mongo.db[collection_name].insert_one(form_data)
 
-    # Email Logic
+    # --- Prepare email ---
     recipients = [form_data.get(f'm{i}_email') for i in range(1, 6) if form_data.get(f'm{i}_email')]
     recipients = list(set([e for e in recipients if "@" in e]))
 
     if recipients:
-        try:
-            msg = Message(f"Registration Confirmed: {raw_event_name}",
-                          sender=app.config['MAIL_USERNAME'],
-                          recipients=recipients)
-            msg.body = f"Greetings Team {form_data.get('team_name')},\n\nYour registration for {raw_event_name} has been recorded.\n\nRegards,\nE-Cell Yukta"
-            mail.send(msg)
-        except Exception as e:
-            print(f"Mail failed: {e}")
+        msg = Message(
+            f"Registration Confirmed: {raw_event_name}",
+            sender=app.config['MAIL_USERNAME'],
+            recipients=recipients
+        )
+        msg.body = f"""Greetings Team {form_data.get('team_name')},
+                  Your registration for {raw_event_name} has been recorded.
+                  Regards,
+                  E-Cell Yukta"""
+        # 🔥 Send email in background thread
+        threading.Thread(target=send_email_async, args=(app, msg)).start()
 
     return render_template('success.html', event=raw_event_name)
 
@@ -195,10 +206,8 @@ def submit_showcase():
                       sender=app.config['MAIL_USERNAME'],
                       recipients=[data['email']])
         msg.body = f"Hello {data['full_name']},\n\nYour ID: {unique_id}\n\nRegards,\nE-Cell Yukta"
-        mail.send(msg)
-    except Exception as e:
-        print(f"Mail failed: {e}")
-
+    
+        threading.Thread(target=send_email_async, args=(app, msg)).start()
     return render_template('success.html', event="Startup Showcase", unique_id=unique_id)
 
 @app.errorhandler(413)
